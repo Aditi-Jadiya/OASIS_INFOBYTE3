@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Converter</title>
+    <link rel="stylesheet" href="task3.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="converter-card">
+        <h1>Temperature Converter</h1>
+        <div class="input-group">
+            <label for="degrees">Degrees</label>
+            <input type="number" id="degrees" placeholder="Enter temperature value">
+        </div>
+
+        <div class="input-group">
+            <label for="type">Convert From</label>
+            <select id="type">
+                <option value="celsius">Celsius</option>
+                <option value="fahrenheit">Fahrenheit</option>
+                <option value="kelvin">Kelvin</option>
+            </select>
+        </div>
+
+        <button id="convert-btn">Convert</button>
+
+        <div class="result-area">
+            <p>Result:</p>
+            <div id="result-display">0.00 </div>
+        </div>
+
+        <!-- Custom Modal for Error Messages (replacing alert()) -->
+        <div id="error-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <p id="error-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const degreesInput = document.getElementById('degrees');
+        const typeSelect = document.getElementById('type');
+        const convertBtn = document.getElementById('convert-btn');
+        const resultDisplay = document.getElementById('result-display');
+        const errorModal = document.getElementById('error-modal');
+        const errorMessage = document.getElementById('error-message');
+        const closeBtn = document.querySelector('.close-btn');
+
+        // Function to show custom error modal
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorModal.style.display = 'block';
+        }
+
+        // Close modal when 'x' is clicked
+        closeBtn.onclick = function() {
+            errorModal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target == errorModal) {
+                errorModal.style.display = 'none';
+            }
+        }
+
+        // Core conversion logic
+        function convertTemperature() {
+            const degrees = parseFloat(degreesInput.value);
+            const type = typeSelect.value;
+
+            // Validation: Check if input is a valid number
+            if (isNaN(degrees)) {
+                showError("Please enter a valid number for the temperature.");
+                return;
+            }
+
+            const conversions = {
+                celsius: {
+                    fahrenheit: (C) => {(C * 9/5 + 32).toFixed(4)} ,
+                    kelvin: (C) => {(C + 273.15).toFixed(4)} {K}
+                },
+                fahrenheit: {
+                    celsius: (F) => {((F - 32) * 5/9).toFixed(4)} {C}^{\circ},
+                    kelvin: (F) => {((F - 32) * 5/9 + 273.15).toFixed(4)} {K}
+                },
+                kelvin: {
+                    celsius: (K) => {(K - 273.15).toFixed(4)} {C}^{\circ},
+                    fahrenheit: (K) => {((K - 273.15) * 9/5 + 32).toFixed(4)} 
+                }
+            };
+
+            let results = [];
+
+            // Convert to all other units
+            for (const targetType in conversions[type]) {
+                const func = conversions[type][targetType];
+                results.push(func(degrees));
+            }
+
+            // Display results in a readable format
+            if (results.length === 2) {
+                resultDisplay.innerHTML = ${results[0]}<br>${results[1]};
+            } else {
+                resultDisplay.innerHTML = "Error in conversion setup.";
+            }
+        }
+
+        convertBtn.addEventListener('click', convertTemperature);
+
+        // Optional: Trigger conversion on Enter key in the degrees input
+        degreesInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                convertTemperature();
+            }
+        });
+
+        // Set initial result display placeholder
+        resultDisplay.innerHTML = '0.00 ';
+
+    </script>
+</body>
+</html>
